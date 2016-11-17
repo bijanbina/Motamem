@@ -15,13 +15,15 @@ TEMPLATE = app
 SOURCES += main.cpp\
     renderarea.cpp \
     mainwindow.cpp \
-    parser.cpp
+    parser.cpp \
+    qcustomplot.cpp
 
 HEADERS  += \
     renderarea.h \
     mainwindow.h \
     define.h \
-    parser.h
+    parser.h \
+    qcustomplot.h
 
 LIBS += -lpthread
 #INCLUDEPATH +=
