@@ -13,6 +13,7 @@ public:
     parser(sparameter_data *data);
     ~parser();
     bool openFile(QString filename);
+    void createPlotFile();
 
 private:
     sparameter_data *plot_data;

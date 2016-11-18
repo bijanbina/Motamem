@@ -13,7 +13,7 @@ RenderArea::RenderArea(sparameter_data *data, QWidget *parent)
     step_x = screen_size/screen_res;
     this->setMouseTracking(true);
     this->setAcceptDrops(true);
-    plot_id = S11_PLOT;
+    plot_id = NO_PLOT;
     this->setFocusPolicy(Qt::StrongFocus);
     qDebug() << "H: " << this->acceptDrops();
     setBackgroundRole(QPalette::Base);
@@ -50,7 +50,7 @@ void RenderArea::renderPoint(QPainter *painter)
     painter->setBrush(QColor("#50bdd2"));
     painter->setPen(QColor("#50bdd2"));
     int y1,y2;
-    for (int x = 1; x < screen_res; x++)
+    for (int x = 1; x < adc_data->point_count; x++)
     {
         switch(plot_id)
         {

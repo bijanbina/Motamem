@@ -12,6 +12,10 @@ typedef struct sparameter_data_t {
     QVector<int> S12;
     QVector<int> S21;
     QVector<int> S22;
+    QVector<int> freq;
+    int f_start;
+    int f_end;
+    int point_count;
 } sparameter_data;
 
 void *serial_main(void *arg);

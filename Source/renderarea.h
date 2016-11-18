@@ -16,7 +16,8 @@ enum plotID {
     S11_PLOT,
     S12_PLOT,
     S21_PLOT,
-    S22_PLOT
+    S22_PLOT,
+    NO_PLOT
 };
 
 class RenderArea : public QWidget

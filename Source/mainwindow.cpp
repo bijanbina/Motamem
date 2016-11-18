@@ -36,10 +36,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     setCentralWidget(mainWidget);
     setWindowTitle("Motamem");
     setWindowFlags(Qt::WindowStaysOnTopHint);
-    adc_data.S11 = QVector<int> (1000);
-    adc_data.S12 = QVector<int> (1000);
-    adc_data.S21 = QVector<int> (1000);
-    adc_data.S22 = QVector<int> (1000);
+    adc_data.point_count = 0;
 
     x = 0;
     update_timer = new QTimer;
