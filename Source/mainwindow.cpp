@@ -42,7 +42,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     update_timer = new QTimer;
     connect(update_timer,SIGNAL(timeout()),this,SLOT(update_osil()));
     connect(renderArea,SIGNAL(click_on_point(int,int)),this,SLOT(onPlotClick(int,int)));
-    connect(renderArea,SIGNAL(move_pointer(int,int)),this,SLOT(onMouseMove(int,int)));
+    connect(renderArea,SIGNAL(move_pointer(int,float)),this,SLOT(onMouseMove(int,float)));
 
     connect(renderArea,SIGNAL(drag_file(QString)),this,SLOT(onNewFile(QString)));
 
@@ -67,9 +67,9 @@ void MainWindow::onPlotClick(int x, int y)
     //status->setText("  " + QString::number(x) + ", " + QString::number(y));
 }
 
-void MainWindow::onMouseMove(int x, int y)
+void MainWindow::onMouseMove(int x, float y)
 {
-    status->setText("  " + QString::number(x) + ", " + QString::number(y));
+    status->setText("  " + QString::number(x) + "MHz : -" + QString::number(y, 'g', 4) + " dB");
 }
 
 void MainWindow::onNewFile(QString filename)

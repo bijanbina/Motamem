@@ -8,15 +8,24 @@
 #define TOPBAR_OFFSET 30
 
 typedef struct sparameter_data_t {
-    QVector<int> S11;
-    QVector<int> S12;
-    QVector<int> S21;
-    QVector<int> S22;
+    QVector<float> S11;
+    QVector<float> S12;
+    QVector<float> S21;
+    QVector<float> S22;
     QVector<int> freq;
     int f_start;
     int f_end;
     int point_count;
+    float step;
 } sparameter_data;
+
+enum plotID {
+    S11_PLOT,
+    S12_PLOT,
+    S21_PLOT,
+    S22_PLOT,
+    NO_PLOT
+};
 
 void *serial_main(void *arg);
 

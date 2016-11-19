@@ -12,13 +12,6 @@
 #include "define.h"
 //! [0]
 //!
-enum plotID {
-    S11_PLOT,
-    S12_PLOT,
-    S21_PLOT,
-    S22_PLOT,
-    NO_PLOT
-};
 
 class RenderArea : public QWidget
 {
@@ -45,6 +38,8 @@ protected:
     void keyPressEvent(QKeyEvent * event) Q_DECL_OVERRIDE;
 
 private:
+    int getYPoint(float y);
+
     sparameter_data *adc_data;
     int i,frameNumber,fps;
     QPixmap *boom;
@@ -59,7 +54,7 @@ private:
 
 signals:
     void click_on_point(int x,int y);
-    void move_pointer(int x,int y);
+    void move_pointer(int x,float y);
     void drag_file(QString filename);
 };
 #endif // RENDERAREA_H

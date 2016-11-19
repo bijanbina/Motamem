@@ -22,7 +22,7 @@ public:
 private slots:
     void update_osil();
     void onPlotClick(int x, int y);
-    void onMouseMove(int x, int y);
+    void onMouseMove(int x, float y);
 
     void onNewFile(QString filename);
 

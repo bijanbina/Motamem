@@ -13,9 +13,12 @@ public:
     parser(sparameter_data *data);
     ~parser();
     bool openFile(QString filename);
-    void createPlotFile();
 
 private:
+    void createPlotFiles(QString filename);
+    void PlotFileS(QString filename, plotID plot_id);
+
+
     sparameter_data *plot_data;
 };
 

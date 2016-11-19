@@ -3,19 +3,8 @@
 #include <QtWidgets>
 #include <string>
 #include <math.h>
-#include <QtSerialPort/QSerialPort>
 #include <QDebug>
-
-#define port_name       "ttyUSB0"
-#define baud_rate       QSerialPort::Baud115200
-#define data_bits       QSerialPort::Data8
-#define parity          QSerialPort::NoParity
-#define stop_bits       QSerialPort::OneStop
-#define flow_control    QSerialPort::NoFlowControl
-
-#define find_backR      0
-#define get_first_char  1
-#define get_sec_char    2
+#include <qcustomplot.h>
 
 parser::parser(sparameter_data *data)
 {
@@ -47,15 +36,15 @@ bool parser::openFile(QString filename)
     plot_data->f_end = fields.at(2).toLong()/1000/1000;
     plot_data->point_count = fields.at(3).toLong();
     plot_data->freq = QVector<int> (plot_data->point_count);
-    int step = ( plot_data->f_end - plot_data->f_start ) / plot_data->point_count;
+    plot_data->step = ( plot_data->f_end - plot_data->f_start ) / (plot_data->point_count * 1.0);
     for (int i = 0 ; i < plot_data->point_count ; i++)
     {
-        plot_data->freq[i] = plot_data->f_start + step * i;
+        plot_data->freq[i] = plot_data->f_start + plot_data->step * i;
     }
-    plot_data->S11 = QVector<int> (plot_data->point_count);
-    plot_data->S12 = QVector<int> (plot_data->point_count);
-    plot_data->S21 = QVector<int> (plot_data->point_count);
-    plot_data->S22 = QVector<int> (plot_data->point_count);
+    plot_data->S11 = QVector<float> (plot_data->point_count);
+    plot_data->S12 = QVector<float> (plot_data->point_count);
+    plot_data->S21 = QVector<float> (plot_data->point_count);
+    plot_data->S22 = QVector<float> (plot_data->point_count);
     while(!testStream.atEnd())
     {
         while(line != "BEGIN" )
@@ -70,19 +59,20 @@ bool parser::openFile(QString filename)
         {
             //qDebug() << line;
             QStringList fields = line.split(",");
+            float s_buffer = sqrt((pow(fields.at(0).toFloat(),2) + pow(fields.at(1).toFloat(),2)));
             switch (read_param)
             {
                 case 0:
-                    plot_data->S11[i] = (pow(fields.at(0).toFloat(),2) + pow(fields.at(1).toFloat(),2))* 2000 + TOPBAR_OFFSET;
+                    plot_data->S11[i] = s_buffer;
                     break;
                 case 1:
-                    plot_data->S12[i] = (pow(fields.at(0).toFloat(),2) + pow(fields.at(1).toFloat(),2))* 300 + TOPBAR_OFFSET;
+                    plot_data->S12[i] = s_buffer;
                     break;
                 case 2:
-                    plot_data->S21[i] = (pow(fields.at(0).toFloat(),2) + pow(fields.at(1).toFloat(),2))* 300 + TOPBAR_OFFSET;
+                    plot_data->S21[i] = s_buffer;
                     break;
                 case 3:
-                    plot_data->S22[i] = (pow(fields.at(0).toFloat(),2) + pow(fields.at(1).toFloat(),2))* 2000 + TOPBAR_OFFSET;
+                    plot_data->S22[i] = s_buffer;
                     break;
             }
 
@@ -92,6 +82,7 @@ bool parser::openFile(QString filename)
         }
         read_param++;
     }
+    createPlotFiles(filename);
     /*while (true)
     {
         data = serial->read(1);
@@ -144,7 +135,70 @@ parser::~parser()
     ;
 }
 
-void parser::createPlotFile()
+void parser::createPlotFiles(QString filename)
 {
+    PlotFileS(filename,S11_PLOT);
+    PlotFileS(filename,S12_PLOT);
+    PlotFileS(filename,S21_PLOT);
+    PlotFileS(filename,S22_PLOT);
+}
 
+//s parameter plot
+void parser::PlotFileS(QString filename,plotID plot_id)
+{
+    QCustomPlot *plot_wid = new QCustomPlot;
+    QFileInfo *file_info = new QFileInfo(filename);
+    QVector <double> s_10log = QVector<double> (plot_data->point_count);
+    QVector <double> f = QVector<double> (plot_data->point_count);
+    QString plot_title = file_info->baseName();
+    QString base_path = file_info->absoluteDir().absolutePath() + "/" + file_info->baseName();
+    QString plot_s_name;
+    QVector<float> *s_param;
+
+    switch(plot_id)
+    {
+        case S11_PLOT:
+            plot_s_name = "S11";
+            s_param = &(plot_data->S11);
+            break;
+        case S12_PLOT:
+            plot_s_name = "S12";
+            s_param = &(plot_data->S12);
+            break;
+        case S21_PLOT:
+            plot_s_name = "S21";
+            s_param = &(plot_data->S21);
+            break;
+        case S22_PLOT:
+            plot_s_name = "S22";
+            s_param = &(plot_data->S22);
+            break;
+    }
+
+    double s_min = 0;
+    for (int i = 0 ; i < plot_data->point_count ; i++)
+    {
+        s_10log[i] = 10 * log10((*s_param)[i]);
+        f[i] = plot_data->freq[i];
+        if (s_min > s_10log[i])
+        {
+            s_min = s_10log[i];
+        }
+    }
+
+    plot_wid->addGraph();
+    plot_wid->graph(0)->setData(f,s_10log);
+
+    plot_wid->xAxis->setLabel("Frequency (MHz)");
+    plot_wid->yAxis->setLabel("Power (dB)");
+    plot_wid->plotLayout()->insertRow(0);
+    plot_wid->plotLayout()->addElement(0,0, new QCPTextElement(plot_wid,
+                                                   plot_title + " " + plot_s_name,
+                                                   QFont("sans", 12, QFont::Bold)));
+
+    plot_wid->xAxis->setRange(plot_data->f_start, plot_data->f_end);
+    plot_wid->yAxis->setRange(floor(s_min*1.4142),5);
+    plot_wid->replot();
+    qDebug() << file_info->absoluteDir().absolutePath();
+    plot_wid->savePng(base_path + "_" + plot_s_name + ".png");
 }
