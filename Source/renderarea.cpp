@@ -3,13 +3,15 @@
 #include <QPainter>
 #include <QMimeData>
 #include <qmath.h>
+#include <QInputDialog>
 
 
 RenderArea::RenderArea(sparameter_data *data, QWidget *parent)
     : QWidget(parent)
 {
     adc_data = data;
-    cursor_enable = 0;
+    cursor_enable = false;
+    cursor_lock = false;
     step_x = screen_size/screen_res;
     this->setMouseTracking(true);
     this->setAcceptDrops(true);
@@ -131,6 +133,13 @@ void RenderArea::paintEvent(QPaintEvent *)
 void RenderArea::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton ) {
+
+        if ( cursor_lock )
+        {
+            cursor_lock = false;
+            return;
+        }
+
         emit click_on_point(event->x(),event->y());
         cursor_enable = !cursor_enable;
         cursor.setX(event->x());
@@ -188,31 +197,34 @@ void RenderArea::mousePressEvent(QMouseEvent *event)
 
 void RenderArea::mouseMoveEvent(QMouseEvent *event)
 {
-    cursor.setX(event->x());
-    if ( qRound(event->x()/step_x) < adc_data->point_count )
+    if ( !cursor_lock )
     {
-        switch(plot_id)
+        cursor.setX(event->x());
+        if ( qRound(event->x()/step_x) < adc_data->point_count )
         {
-            case S11_PLOT:
-                cursor.setY(getYPoint(adc_data->S11[qRound(event->x()/step_x)]));
-                break;
-            case S12_PLOT:
-                cursor.setY(getYPoint(adc_data->S12[qRound(event->x()/step_x)]));
-                break;
-            case S21_PLOT:
-                cursor.setY(getYPoint(adc_data->S21[qRound(event->x()/step_x)]));
-                break;
-            case S22_PLOT:
-                cursor.setY(getYPoint(adc_data->S22[qRound(event->x()/step_x)]));
-                break;
-        }
-        if (cursor_enable)
-        {
-            emit move_pointer(adc_data->f_start + event->x() /step_x * adc_data->step,cursor.y()/12.0);
-        }
-        else
-        {
-            emit move_pointer(event->x(),event->y());
+            switch(plot_id)
+            {
+                case S11_PLOT:
+                    cursor.setY(getYPoint(adc_data->S11[qRound(event->x()/step_x)]));
+                    break;
+                case S12_PLOT:
+                    cursor.setY(getYPoint(adc_data->S12[qRound(event->x()/step_x)]));
+                    break;
+                case S21_PLOT:
+                    cursor.setY(getYPoint(adc_data->S21[qRound(event->x()/step_x)]));
+                    break;
+                case S22_PLOT:
+                    cursor.setY(getYPoint(adc_data->S22[qRound(event->x()/step_x)]));
+                    break;
+            }
+            if (cursor_enable)
+            {
+                emit move_pointer(adc_data->f_start + event->x() /step_x * adc_data->step,cursor.y()/12.0);
+            }
+            else
+            {
+                emit move_pointer(event->x(),event->y());
+            }
         }
     }
 
@@ -240,7 +252,7 @@ int RenderArea::getYPoint(float y)
 void RenderArea::dropEvent(QDropEvent* event)
 {
     const QMimeData* mimeData = event->mimeData();
-
+    this->window()->activateWindow();
     // check for our needed mime type, here a file or a list of files
     if (mimeData->hasUrls())
     {
@@ -286,22 +298,38 @@ void RenderArea::keyPressEvent(QKeyEvent * event)
     {
         plot_id = S22_PLOT;
     }
+    else if( event->key() == Qt::Key_L )
+    {
+        bool ok;
+        double freq = QInputDialog::getDouble(this->window(), "Frequency Measurment",
+                                             tr("Enter Frequency:"), adc_data->f_start, adc_data->f_start, adc_data->f_end,0, &ok);
+        if (ok)
+        {
+            cursor_enable = true;
+            cursor_lock = true;
+            cursor.setX((freq - adc_data->f_start) / adc_data->step * step_x);
+        }
+    }
+    int a = qRound(cursor.x()/step_x);
     if (cursor_enable)
     {   //update for new parameter
         switch(plot_id)
         {
             case S11_PLOT:
-                cursor.setY(adc_data->S11[qRound(cursor.x()/step_x)]);
+                cursor.setY(getYPoint(adc_data->S11[qRound(cursor.x()/step_x)]));
                 break;
             case S12_PLOT:
-                cursor.setY(adc_data->S12[qRound(cursor.x()/step_x)]);
+                cursor.setY(getYPoint(adc_data->S12[qRound(cursor.x()/step_x)]));
                 break;
             case S21_PLOT:
-                cursor.setY(adc_data->S21[qRound(cursor.x()/step_x)]);
+                cursor.setY(getYPoint(adc_data->S21[qRound(cursor.x()/step_x)]));
                 break;
             case S22_PLOT:
-                cursor.setY(adc_data->S22[qRound(cursor.x()/step_x)]);
+                cursor.setY(getYPoint(adc_data->S22[qRound(cursor.x()/step_x)]));
                 break;
         }
+
+        emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,cursor.y()/12.0);
     }
+
 }

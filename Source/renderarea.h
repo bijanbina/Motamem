@@ -50,6 +50,7 @@ private:
     plotID plot_id;
     QPoint cursor;
     bool cursor_enable;
+    bool cursor_lock;
     double step_x;
 
 signals:

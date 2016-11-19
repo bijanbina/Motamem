@@ -32,8 +32,8 @@ bool parser::openFile(QString filename)
         line = testStream.readLine();
     }
     QStringList fields = line.split(" ");
-    plot_data->f_start = fields.at(1).toLong()/1000/1000;
-    plot_data->f_end = fields.at(2).toLong()/1000/1000;
+    plot_data->f_start = fields.at(1).toLongLong()/1000/1000;
+    plot_data->f_end = fields.at(2).toLongLong()/1000/1000;
     plot_data->point_count = fields.at(3).toLong();
     plot_data->freq = QVector<int> (plot_data->point_count);
     plot_data->step = ( plot_data->f_end - plot_data->f_start ) / (plot_data->point_count * 1.0);
@@ -52,7 +52,6 @@ bool parser::openFile(QString filename)
             line = testStream.readLine();
             //qDebug() << line;
         }
-        qDebug() << "DETECTED";
         int i = 0;
         line = testStream.readLine();
         while(!line.contains("END") )
