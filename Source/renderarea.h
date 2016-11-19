@@ -56,5 +56,6 @@ signals:
     void click_on_point(int x,int y);
     void move_pointer(int x,float y);
     void drag_file(QString filename);
+    void drop_multifile(QList<QUrl> urlList);
 };
 #endif // RENDERAREA_H

@@ -6,6 +6,7 @@
 #include <math.h>
 #include <QtSerialPort/QSerialPort>
 #include <QDebug>
+#include <QUrl>
 
 #define port_name       "ttyUSB0"
 #define baud_rate       QSerialPort::Baud9600
@@ -43,10 +44,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(update_timer,SIGNAL(timeout()),this,SLOT(update_osil()));
     connect(renderArea,SIGNAL(click_on_point(int,int)),this,SLOT(onPlotClick(int,int)));
     connect(renderArea,SIGNAL(move_pointer(int,float)),this,SLOT(onMouseMove(int,float)));
+    connect(renderArea,SIGNAL(drop_multifile(QList<QUrl>)),this,SLOT(dropMultiFile(QList<QUrl>)));
 
     connect(renderArea,SIGNAL(drag_file(QString)),this,SLOT(onNewFile(QString)));
 
-    update_timer->start(30);
 
 
 
@@ -75,4 +76,13 @@ void MainWindow::onMouseMove(int x, float y)
 void MainWindow::onNewFile(QString filename)
 {
     device->openFile(filename);
+    update_timer->start(30);
+}
+
+void MainWindow::dropMultiFile(QList<QUrl> urlList)
+{
+    for (int i = 0 ; i < urlList.size() ; i++)
+    {
+        device->openFile(urlList.at(i).toLocalFile());
+    }
 }

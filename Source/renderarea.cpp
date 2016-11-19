@@ -257,7 +257,7 @@ void RenderArea::dropEvent(QDropEvent* event)
       openFiles(pathList);*/
       if (urlList.size() > 1)
       {
-          emit drop_multifile(plot_filename);
+          emit drop_multifile(urlList);
       }
       else
       {

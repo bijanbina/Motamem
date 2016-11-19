@@ -23,6 +23,8 @@ private slots:
     void update_osil();
     void onPlotClick(int x, int y);
     void onMouseMove(int x, float y);
+    void dropMultiFile(QList<QUrl> urlList);
+
 
     void onNewFile(QString filename);
 
