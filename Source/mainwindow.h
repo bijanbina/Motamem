@@ -8,6 +8,7 @@
 #include "define.h"
 #include "QTimer"
 #include "parser.h"
+#include "QMenuBar"
 
 
 class MainWindow : public QMainWindow
@@ -29,6 +30,35 @@ private slots:
     void onNewFile(QString filename);
 
 private:
+    void createMenu();
+
+    QMenuBar *menu;
+    QMenu *FileMenu;
+    QAction *A_Open;
+    QAction *A_Save;
+    QAction *A_LoadInfo;
+    QAction *A_Print;
+    QMenu *ModeMenu;
+    QAction *A_AutoMode;
+    QAction *A_ManualMode;
+    QAction *A_Quit;
+    //Plot Menu
+    QMenu *plotMenu;
+    QAction *A_plot_phase;
+    QAction *A_plot_double;
+    //Signal Menu
+    QMenu *SigMenu;
+    QAction *A_SetTime;
+    QAction *A_SetDB;
+    QAction *A_SetRecord;
+    QAction *B_AskComplex;
+    //Help Menu
+    QMenu *HelpMenu;
+    QAction *A_Content;
+    QAction *A_Support;
+    QAction *A_Update;
+    QAction *A_About;
+
     RenderArea *renderArea;
     int voltage;
     QLabel* status;

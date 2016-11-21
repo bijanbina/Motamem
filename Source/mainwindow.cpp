@@ -38,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     setWindowTitle("Motamem");
     setWindowFlags(Qt::WindowStaysOnTopHint);
     adc_data.point_count = 0;
+    createMenu();
 
     x = 0;
     update_timer = new QTimer;
@@ -51,6 +52,51 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 
 
+}
+
+void MainWindow::createMenu()
+{
+    menu = new QMenuBar;
+    setMenuBar(menu);
+    //File Menu
+    QMenu *FileMenu = menu->addMenu(trUtf8("File"));
+    A_Open = FileMenu->addAction(trUtf8("Open"));
+    A_Save = FileMenu->addAction(trUtf8("Save"));
+    A_Print  = FileMenu->addAction(trUtf8("Print"));
+    A_Save->setEnabled(false);
+    FileMenu->addSeparator();
+    FileMenu->addSeparator();
+    //Mode Menu in File
+    QMenu *ModeMenu = FileMenu->addMenu(trUtf8("Generating Mode"));
+    A_AutoMode     = ModeMenu->addAction(trUtf8("Auto"));
+    A_ManualMode   = ModeMenu->addAction(trUtf8("Nanual"));
+    //set Checkable Modes
+    A_AutoMode->setCheckable(true);
+    A_ManualMode->setCheckable  (true);
+
+    FileMenu->addSeparator();
+    A_Quit = FileMenu->addAction(trUtf8("Quit"));
+    //Plot Menu
+    //Plot Menu
+    QMenu *plotMenu = menu->addMenu(trUtf8("Plot"));
+    A_plot_phase     = plotMenu->addAction(trUtf8("Plot Phase"));
+    A_plot_double    = plotMenu->addAction(trUtf8("Double Plot"));
+
+    A_plot_phase->setCheckable (true);
+    A_plot_double->setCheckable(true);
+    //Signal Menu
+    QMenu *SigMenu  = menu->addMenu(trUtf8("Signal"));
+    A_SetTime       = SigMenu->addAction(trUtf8("Signal Time"));
+    A_SetDB         = SigMenu->addAction(trUtf8("Database Path"));
+    A_SetRecord     = SigMenu->addAction(trUtf8("Record Number"));
+    B_AskComplex    = SigMenu->addAction(trUtf8("Ask Complex Number"));
+
+    //Help Menu
+    QMenu *HelpMenu = menu->addMenu(trUtf8("Help"));
+    A_Content       = HelpMenu->addAction(trUtf8("Content"));
+    A_Support       = HelpMenu->addAction(trUtf8("Support"));
+    A_Update        = HelpMenu->addAction(trUtf8("Update"));
+    A_About = HelpMenu->addAction(trUtf8("About"));
 }
 
 void MainWindow::update_osil()
