@@ -28,6 +28,7 @@ private slots:
 
 
     void onNewFile(QString filename);
+    void about_clicked();
 
 private:
     void createMenu();

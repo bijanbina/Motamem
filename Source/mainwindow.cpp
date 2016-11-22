@@ -7,6 +7,7 @@
 #include <QtSerialPort/QSerialPort>
 #include <QDebug>
 #include <QUrl>
+#include <QMessageBox>
 
 #define port_name       "ttyUSB0"
 #define baud_rate       QSerialPort::Baud9600
@@ -48,6 +49,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(renderArea,SIGNAL(drop_multifile(QList<QUrl>)),this,SLOT(dropMultiFile(QList<QUrl>)));
 
     connect(renderArea,SIGNAL(drag_file(QString)),this,SLOT(onNewFile(QString)));
+    connect(A_About, SIGNAL(triggered(bool)),this,SLOT(about_clicked()));
 
 
 
@@ -96,7 +98,7 @@ void MainWindow::createMenu()
     A_Content       = HelpMenu->addAction(trUtf8("Content"));
     A_Support       = HelpMenu->addAction(trUtf8("Support"));
     A_Update        = HelpMenu->addAction(trUtf8("Update"));
-    A_About = HelpMenu->addAction(trUtf8("About"));
+    A_About         = HelpMenu->addAction(trUtf8("About"));
 }
 
 void MainWindow::update_osil()
@@ -131,4 +133,14 @@ void MainWindow::dropMultiFile(QList<QUrl> urlList)
     {
         device->openFile(urlList.at(i).toLocalFile());
     }
+}
+
+void MainWindow::about_clicked()
+{
+    QMessageBox about_box(this);
+    about_box.setText(\
+    "Bijan Binaee\nMicrowave Laboratory\nMotamem Project\nCenter of Excellence on Applied Electromagnetic Systems\nCopyright © 2016 University of Tehran.\nAll rights reserved.");
+    about_box.setIconPixmap(QPixmap("/home/bijan/Pictures/Logo/Logo/UT Logo/80px-University_of_Tehran_logo.svg.png"));
+    about_box.setWindowTitle("About");
+    about_box.exec();
 }
