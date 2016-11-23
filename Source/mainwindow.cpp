@@ -140,7 +140,7 @@ void MainWindow::about_clicked()
     QMessageBox about_box(this);
     about_box.setText(\
     "Bijan Binaee\nMicrowave Laboratory\nMotamem Project\nCenter of Excellence on Applied Electromagnetic Systems\nCopyright © 2016 University of Tehran.\nAll rights reserved.");
-    about_box.setIconPixmap(QPixmap("/home/bijan/Pictures/Logo/Logo/UT Logo/80px-University_of_Tehran_logo.svg.png"));
+    about_box.setIconPixmap(QPixmap(":../Resources/ut_logo.png"));
     about_box.setWindowTitle("About");
     about_box.exec();
 }
