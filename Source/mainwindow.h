@@ -29,6 +29,8 @@ private slots:
 
     void onNewFile(QString filename);
     void about_clicked();
+    void plot_phase_toggle();
+    void plot_double_toggle();
 
 private:
     void createMenu();

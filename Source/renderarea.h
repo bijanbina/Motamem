@@ -51,6 +51,8 @@ private:
     QPoint cursor;
     bool cursor_enable;
     bool cursor_lock;
+    bool isDouble;
+    bool isPhase;
     double step_x;
 
 signals:

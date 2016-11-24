@@ -29,6 +29,8 @@ RenderArea::RenderArea(sparameter_data *data, QWidget *parent)
     fps_timer->start(1000);
     connect(fps_timer,SIGNAL(timeout()),this,SLOT(calc_fps()));
     fps = 30;
+    isDouble = false;
+    isPhase = false;
 }
 
 QSize RenderArea::minimumSizeHint() const
@@ -83,6 +85,43 @@ void RenderArea::renderPoint(QPainter *painter)
             painter->drawLine(step_x*x-step_x/2,y1,step_x*x+step_x/2,y2);
         }
     }
+
+    if (isDouble)
+    {
+        painter->setBrush(QColor("#d25079"));
+        painter->setPen(QColor("#d25079"));
+        for (int x = 1; x < adc_data->point_count; x++)
+        {
+            switch(plot_id)
+            {
+                case S11_PLOT:
+                    y2 = adc_data->S22[x];
+                    y1 = adc_data->S22[x-1];
+                    break;
+                case S12_PLOT:
+                    y2 = adc_data->S21[x];
+                    y1 = adc_data->S21[x-1];
+                    break;
+                case S21_PLOT:
+                    y2 = adc_data->S12[x];
+                    y1 = adc_data->S12[x-1];
+                    break;
+                case S22_PLOT:
+                    y2 = adc_data->S11[x];
+                    y1 = adc_data->S11[x-1];
+                    break;
+            }
+            //painter->drawEllipse(QPoint(10*x+5,y),5,5);
+            if (true)
+            {
+                painter->drawLine(step_x*x-step_x/2,getYPoint(y1),step_x*x+step_x/2,getYPoint(y2));
+            }
+            else
+            {
+                painter->drawLine(step_x*x-step_x/2,y1,step_x*x+step_x/2,y2);
+            }
+        }
+    }
 }
 
 void RenderArea::paintEvent(QPaintEvent *)
@@ -119,6 +158,18 @@ void RenderArea::paintEvent(QPaintEvent *)
         case S22_PLOT:
             painter_wid.drawText(10,size().height()-15,"S22");
             break;
+    }
+    if (isPhase)
+    {
+        painter_wid.drawText(30,15,"P");
+        if (isDouble)
+        {
+            painter_wid.drawText(35,15,", D");
+        }
+    }
+    else if (isDouble)
+    {
+        painter_wid.drawText(30,15,"D");
     }
     if (cursor_enable)
     {
@@ -309,6 +360,14 @@ void RenderArea::keyPressEvent(QKeyEvent * event)
             cursor_lock = true;
             cursor.setX((freq - adc_data->f_start) / adc_data->step * step_x);
         }
+    }
+    else if( event->key() == Qt::Key_D )
+    {
+        isDouble = !isDouble;
+    }
+    else if( event->key() == Qt::Key_P )
+    {
+        isPhase = !isPhase;
     }
     int a = qRound(cursor.x()/step_x);
     if (cursor_enable)
