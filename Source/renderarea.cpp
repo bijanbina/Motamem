@@ -54,71 +54,129 @@ void RenderArea::renderPoint(QPainter *painter)
     painter->setBrush(QColor("#50bdd2"));
     painter->setPen(QColor("#50bdd2"));
     float y1,y2;
-    for (int x = 1; x < adc_data->point_count; x++)
+    if (isPhase)
     {
-        switch(plot_id)
-        {
-            case S11_PLOT:
-                y2 = adc_data->S11[x];
-                y1 = adc_data->S11[x-1];
-                break;
-            case S12_PLOT:
-                y2 = adc_data->S12[x];
-                y1 = adc_data->S12[x-1];
-                break;
-            case S21_PLOT:
-                y2 = adc_data->S21[x];
-                y1 = adc_data->S21[x-1];
-                break;
-            case S22_PLOT:
-                y2 = adc_data->S22[x];
-                y1 = adc_data->S22[x-1];
-                break;
-        }
-        //painter->drawEllipse(QPoint(10*x+5,y),5,5);
-        if (true)
-        {
-            painter->drawLine(step_x*x-step_x/2,getYPoint(y1),step_x*x+step_x/2,getYPoint(y2));
-        }
-        else
-        {
-            painter->drawLine(step_x*x-step_x/2,y1,step_x*x+step_x/2,y2);
-        }
-    }
-
-    if (isDouble)
-    {
-        painter->setBrush(QColor("#d25079"));
-        painter->setPen(QColor("#d25079"));
         for (int x = 1; x < adc_data->point_count; x++)
         {
             switch(plot_id)
             {
                 case S11_PLOT:
-                    y2 = adc_data->S22[x];
-                    y1 = adc_data->S22[x-1];
+                    y2 = adc_data->S11_phase[x];
+                    y1 = adc_data->S11_phase[x-1];
                     break;
                 case S12_PLOT:
-                    y2 = adc_data->S21[x];
-                    y1 = adc_data->S21[x-1];
+                    y2 = adc_data->S12_phase[x];
+                    y1 = adc_data->S12_phase[x-1];
                     break;
                 case S21_PLOT:
-                    y2 = adc_data->S12[x];
-                    y1 = adc_data->S12[x-1];
+                    y2 = adc_data->S21_phase[x];
+                    y1 = adc_data->S21_phase[x-1];
                     break;
                 case S22_PLOT:
-                    y2 = adc_data->S11[x];
-                    y1 = adc_data->S11[x-1];
+                    y2 = adc_data->S22_phase[x];
+                    y1 = adc_data->S22_phase[x-1];
                     break;
             }
             //painter->drawEllipse(QPoint(10*x+5,y),5,5);
             if (true)
             {
-                painter->drawLine(step_x*x-step_x/2,getYPoint(y1),step_x*x+step_x/2,getYPoint(y2));
+                painter->drawLine(step_x*x-step_x/2,getPhasePoint(y1),step_x*x+step_x/2,getPhasePoint(y2));
             }
             else
             {
                 painter->drawLine(step_x*x-step_x/2,y1,step_x*x+step_x/2,y2);
+            }
+        }
+
+        if (isDouble)
+        {
+            painter->setBrush(QColor("#d25079"));
+            painter->setPen(QColor("#d25079"));
+            for (int x = 1; x < adc_data->point_count; x++)
+            {
+                switch(plot_id)
+                {
+                    case S11_PLOT:
+                        y2 = adc_data->S22_phase[x];
+                        y1 = adc_data->S22_phase[x-1];
+                        break;
+                    case S12_PLOT:
+                        y2 = adc_data->S21_phase[x];
+                        y1 = adc_data->S21_phase[x-1];
+                        break;
+                    case S21_PLOT:
+                        y2 = adc_data->S12_phase[x];
+                        y1 = adc_data->S12_phase[x-1];
+                        break;
+                    case S22_PLOT:
+                        y2 = adc_data->S11_phase[x];
+                        y1 = adc_data->S11_phase[x-1];
+                        break;
+                }
+                painter->drawLine(step_x*x-step_x/2,getPhasePoint(y1),step_x*x+step_x/2,getPhasePoint(y2));
+            }
+        }
+    }
+    else
+    {
+        for (int x = 1; x < adc_data->point_count; x++)
+        {
+            switch(plot_id)
+            {
+                case S11_PLOT:
+                    y2 = adc_data->S11[x];
+                    y1 = adc_data->S11[x-1];
+                    break;
+                case S12_PLOT:
+                    y2 = adc_data->S12[x];
+                    y1 = adc_data->S12[x-1];
+                    break;
+                case S21_PLOT:
+                    y2 = adc_data->S21[x];
+                    y1 = adc_data->S21[x-1];
+                    break;
+                case S22_PLOT:
+                    y2 = adc_data->S22[x];
+                    y1 = adc_data->S22[x-1];
+                    break;
+            }
+            painter->drawLine(step_x*x-step_x/2,getYPoint(y1),step_x*x+step_x/2,getYPoint(y2));
+        }
+
+        if (isDouble)
+        {
+            painter->setBrush(QColor("#d25079"));
+            painter->setPen(QColor("#d25079"));
+            for (int x = 1; x < adc_data->point_count; x++)
+            {
+                switch(plot_id)
+                {
+                    case S11_PLOT:
+                        y2 = adc_data->S22[x];
+                        y1 = adc_data->S22[x-1];
+                        break;
+                    case S12_PLOT:
+                        y2 = adc_data->S21[x];
+                        y1 = adc_data->S21[x-1];
+                        break;
+                    case S21_PLOT:
+                        y2 = adc_data->S12[x];
+                        y1 = adc_data->S12[x-1];
+                        break;
+                    case S22_PLOT:
+                        y2 = adc_data->S11[x];
+                        y1 = adc_data->S11[x-1];
+                        break;
+                }
+                //painter->drawEllipse(QPoint(10*x+5,y),5,5);
+                if (true)
+                {
+                    painter->drawLine(step_x*x-step_x/2,getYPoint(y1),step_x*x+step_x/2,getYPoint(y2));
+                }
+                else
+                {
+                    painter->drawLine(step_x*x-step_x/2,y1,step_x*x+step_x/2,y2);
+                }
             }
         }
     }
@@ -298,6 +356,11 @@ int RenderArea::getYPoint(float y)
     {
         return round(height()-y*400 + TOPBAR_OFFSET);
     }
+}
+
+int RenderArea::getPhasePoint(float y)
+{
+   return  round(y/3.14159265*180.0 + 200);
 }
 
 void RenderArea::dropEvent(QDropEvent* event)

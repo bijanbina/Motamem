@@ -12,6 +12,10 @@ typedef struct sparameter_data_t {
     QVector<float> S12;
     QVector<float> S21;
     QVector<float> S22;
+    QVector<float> S11_phase;
+    QVector<float> S12_phase;
+    QVector<float> S21_phase;
+    QVector<float> S22_phase;
     QVector<int> freq;
     int f_start;
     int f_end;

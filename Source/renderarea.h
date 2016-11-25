@@ -39,6 +39,7 @@ protected:
 
 private:
     int getYPoint(float y);
+    int getPhasePoint(float y);
 
     sparameter_data *adc_data;
     int i,frameNumber,fps;

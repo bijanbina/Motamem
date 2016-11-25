@@ -45,6 +45,10 @@ bool parser::openFile(QString filename)
     plot_data->S12 = QVector<float> (plot_data->point_count);
     plot_data->S21 = QVector<float> (plot_data->point_count);
     plot_data->S22 = QVector<float> (plot_data->point_count);
+    plot_data->S11_phase = QVector<float> (plot_data->point_count);
+    plot_data->S12_phase = QVector<float> (plot_data->point_count);
+    plot_data->S21_phase = QVector<float> (plot_data->point_count);
+    plot_data->S22_phase = QVector<float> (plot_data->point_count);
     while(!testStream.atEnd())
     {
         while(line != "BEGIN" )
@@ -59,19 +63,24 @@ bool parser::openFile(QString filename)
             //qDebug() << line;
             QStringList fields = line.split(",");
             float s_buffer = sqrt((pow(fields.at(0).toFloat(),2) + pow(fields.at(1).toFloat(),2)));
+            float p_buffer = atan(fields.at(1).toFloat()/fields.at(0).toFloat());
             switch (read_param)
             {
                 case 0:
                     plot_data->S11[i] = s_buffer;
+                    plot_data->S11_phase[i] = p_buffer;
                     break;
                 case 1:
                     plot_data->S12[i] = s_buffer;
+                    plot_data->S12_phase[i] = p_buffer;
                     break;
                 case 2:
                     plot_data->S21[i] = s_buffer;
+                    plot_data->S21_phase[i] = p_buffer;
                     break;
                 case 3:
                     plot_data->S22[i] = s_buffer;
+                    plot_data->S22_phase[i] = p_buffer;
                     break;
             }
 
