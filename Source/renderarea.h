@@ -40,6 +40,7 @@ protected:
 private:
     int getYPoint(float y);
     int getPhasePoint(float y);
+    void updateChannel();
 
     sparameter_data *adc_data;
     int i,frameNumber,fps;
@@ -55,6 +56,10 @@ private:
     bool isDouble;
     bool isPhase;
     double step_x;
+    QVector<float> *channel1;
+    QVector<float> *channel2;
+    QVector<float> *channel1_phase;
+    QVector<float> *channel2_phase;
 
 signals:
     void click_on_point(int x,int y);

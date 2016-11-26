@@ -58,34 +58,10 @@ void RenderArea::renderPoint(QPainter *painter)
     {
         for (int x = 1; x < adc_data->point_count; x++)
         {
-            switch(plot_id)
-            {
-                case S11_PLOT:
-                    y2 = adc_data->S11_phase[x];
-                    y1 = adc_data->S11_phase[x-1];
-                    break;
-                case S12_PLOT:
-                    y2 = adc_data->S12_phase[x];
-                    y1 = adc_data->S12_phase[x-1];
-                    break;
-                case S21_PLOT:
-                    y2 = adc_data->S21_phase[x];
-                    y1 = adc_data->S21_phase[x-1];
-                    break;
-                case S22_PLOT:
-                    y2 = adc_data->S22_phase[x];
-                    y1 = adc_data->S22_phase[x-1];
-                    break;
-            }
+            y2 = (*channel1_phase)[x];
+            y1 = (*channel1_phase)[x-1];
             //painter->drawEllipse(QPoint(10*x+5,y),5,5);
-            if (true)
-            {
-                painter->drawLine(step_x*x-step_x/2,getPhasePoint(y1),step_x*x+step_x/2,getPhasePoint(y2));
-            }
-            else
-            {
-                painter->drawLine(step_x*x-step_x/2,y1,step_x*x+step_x/2,y2);
-            }
+            painter->drawLine(step_x*x-step_x/2,getPhasePoint(y1),step_x*x+step_x/2,getPhasePoint(y2));
         }
 
         if (isDouble)
@@ -94,25 +70,8 @@ void RenderArea::renderPoint(QPainter *painter)
             painter->setPen(QColor("#d25079"));
             for (int x = 1; x < adc_data->point_count; x++)
             {
-                switch(plot_id)
-                {
-                    case S11_PLOT:
-                        y2 = adc_data->S22_phase[x];
-                        y1 = adc_data->S22_phase[x-1];
-                        break;
-                    case S12_PLOT:
-                        y2 = adc_data->S21_phase[x];
-                        y1 = adc_data->S21_phase[x-1];
-                        break;
-                    case S21_PLOT:
-                        y2 = adc_data->S12_phase[x];
-                        y1 = adc_data->S12_phase[x-1];
-                        break;
-                    case S22_PLOT:
-                        y2 = adc_data->S11_phase[x];
-                        y1 = adc_data->S11_phase[x-1];
-                        break;
-                }
+                y2 = (*channel2_phase)[x];
+                y1 = (*channel2_phase)[x-1];
                 painter->drawLine(step_x*x-step_x/2,getPhasePoint(y1),step_x*x+step_x/2,getPhasePoint(y2));
             }
         }
@@ -121,25 +80,8 @@ void RenderArea::renderPoint(QPainter *painter)
     {
         for (int x = 1; x < adc_data->point_count; x++)
         {
-            switch(plot_id)
-            {
-                case S11_PLOT:
-                    y2 = adc_data->S11[x];
-                    y1 = adc_data->S11[x-1];
-                    break;
-                case S12_PLOT:
-                    y2 = adc_data->S12[x];
-                    y1 = adc_data->S12[x-1];
-                    break;
-                case S21_PLOT:
-                    y2 = adc_data->S21[x];
-                    y1 = adc_data->S21[x-1];
-                    break;
-                case S22_PLOT:
-                    y2 = adc_data->S22[x];
-                    y1 = adc_data->S22[x-1];
-                    break;
-            }
+            y2 = (*channel1)[x];
+            y1 = (*channel1)[x-1];
             painter->drawLine(step_x*x-step_x/2,getYPoint(y1),step_x*x+step_x/2,getYPoint(y2));
         }
 
@@ -149,25 +91,8 @@ void RenderArea::renderPoint(QPainter *painter)
             painter->setPen(QColor("#d25079"));
             for (int x = 1; x < adc_data->point_count; x++)
             {
-                switch(plot_id)
-                {
-                    case S11_PLOT:
-                        y2 = adc_data->S22[x];
-                        y1 = adc_data->S22[x-1];
-                        break;
-                    case S12_PLOT:
-                        y2 = adc_data->S21[x];
-                        y1 = adc_data->S21[x-1];
-                        break;
-                    case S21_PLOT:
-                        y2 = adc_data->S12[x];
-                        y1 = adc_data->S12[x-1];
-                        break;
-                    case S22_PLOT:
-                        y2 = adc_data->S11[x];
-                        y1 = adc_data->S11[x-1];
-                        break;
-                }
+                y2 = (*channel2)[x];
+                y1 = (*channel2)[x-1];
                 //painter->drawEllipse(QPoint(10*x+5,y),5,5);
                 if (true)
                 {
@@ -254,39 +179,11 @@ void RenderArea::mousePressEvent(QMouseEvent *event)
         cursor.setX(event->x());
         if ( qRound(event->x()/step_x) < adc_data->point_count )
         {
-            switch(plot_id)
-            {
-                case S11_PLOT:
-                    cursor.setY(getYPoint(adc_data->S11[qRound(event->x()/step_x)]));
-                    break;
-                case S12_PLOT:
-                    cursor.setY(getYPoint(adc_data->S12[qRound(event->x()/step_x)]));
-                    break;
-                case S21_PLOT:
-                    cursor.setY(getYPoint(adc_data->S21[qRound(event->x()/step_x)]));
-                    break;
-                case S22_PLOT:
-                    cursor.setY(getYPoint(adc_data->S22[qRound(event->x()/step_x)]));
-                    break;
-            }
+            cursor.setY(getYPoint(adc_data->S11[qRound(event->x()/step_x)]));
         }
         else
         {
-            switch(plot_id)
-            {
-                case S11_PLOT:
-                    cursor.setY(getYPoint(adc_data->S11[adc_data->point_count-1]));
-                    break;
-                case S12_PLOT:
-                    cursor.setY(getYPoint(adc_data->S12[adc_data->point_count-1]));
-                    break;
-                case S21_PLOT:
-                    cursor.setY(getYPoint(adc_data->S21[adc_data->point_count-1]));
-                    break;
-                case S22_PLOT:
-                    cursor.setY(getYPoint(adc_data->S22[adc_data->point_count-1]));
-                    break;
-            }
+            cursor.setY(getYPoint((*channel1)[adc_data->point_count-1]));
         }
         /*QPainter painter_wid;
         painter_wid.begin(this);
@@ -311,21 +208,7 @@ void RenderArea::mouseMoveEvent(QMouseEvent *event)
         cursor.setX(event->x());
         if ( qRound(event->x()/step_x) < adc_data->point_count )
         {
-            switch(plot_id)
-            {
-                case S11_PLOT:
-                    cursor.setY(getYPoint(adc_data->S11[qRound(event->x()/step_x)]));
-                    break;
-                case S12_PLOT:
-                    cursor.setY(getYPoint(adc_data->S12[qRound(event->x()/step_x)]));
-                    break;
-                case S21_PLOT:
-                    cursor.setY(getYPoint(adc_data->S21[qRound(event->x()/step_x)]));
-                    break;
-                case S22_PLOT:
-                    cursor.setY(getYPoint(adc_data->S22[qRound(event->x()/step_x)]));
-                    break;
-            }
+            cursor.setY(getYPoint((*channel1)[qRound(event->x()/step_x)]));
             if (cursor_enable)
             {
                 emit move_pointer(adc_data->f_start + event->x() /step_x * adc_data->step,cursor.y()/12.0);
@@ -390,7 +273,40 @@ void RenderArea::dropEvent(QDropEvent* event)
           plot_filename = urlList.at(0).toLocalFile();
           emit drag_file(plot_filename);
           plot_id = S11_PLOT;
+          updateChannel();
       }
+    }
+}
+
+//update plot channel vector to match plot id
+void RenderArea::updateChannel()
+{
+    switch(plot_id)
+    {
+        case S11_PLOT:
+            channel1 = &(adc_data->S11);
+            channel2 = &(adc_data->S22);
+            channel1_phase = &(adc_data->S11_phase);
+            channel2_phase = &(adc_data->S22_phase);
+            break;
+        case S12_PLOT:
+            channel1 = &(adc_data->S12);
+            channel2 = &(adc_data->S21);
+            channel1_phase = &(adc_data->S12_phase);
+            channel2_phase = &(adc_data->S21_phase);
+            break;
+        case S21_PLOT:
+            channel1 = &(adc_data->S21);
+            channel2 = &(adc_data->S12);
+            channel1_phase = &(adc_data->S21_phase);
+            channel2_phase = &(adc_data->S12_phase);
+            break;
+        case S22_PLOT:
+            channel1 = &(adc_data->S22);
+            channel2 = &(adc_data->S11);
+            channel1_phase = &(adc_data->S22_phase);
+            channel2_phase = &(adc_data->S11_phase);
+            break;
     }
 }
 
@@ -399,18 +315,22 @@ void RenderArea::keyPressEvent(QKeyEvent * event)
     if( event->key() == Qt::Key_1 )
     {
         plot_id = S11_PLOT;
+        updateChannel();
     }
     else if( event->key() == Qt::Key_2 )
     {
         plot_id = S12_PLOT;
+        updateChannel();
     }
     else if( event->key() == Qt::Key_3 )
     {
         plot_id = S21_PLOT;
+        updateChannel();
     }
     else if( event->key() == Qt::Key_4 )
     {
         plot_id = S22_PLOT;
+        updateChannel();
     }
     else if( event->key() == Qt::Key_L )
     {
@@ -435,21 +355,7 @@ void RenderArea::keyPressEvent(QKeyEvent * event)
     int a = qRound(cursor.x()/step_x);
     if (cursor_enable)
     {   //update for new parameter
-        switch(plot_id)
-        {
-            case S11_PLOT:
-                cursor.setY(getYPoint(adc_data->S11[qRound(cursor.x()/step_x)]));
-                break;
-            case S12_PLOT:
-                cursor.setY(getYPoint(adc_data->S12[qRound(cursor.x()/step_x)]));
-                break;
-            case S21_PLOT:
-                cursor.setY(getYPoint(adc_data->S21[qRound(cursor.x()/step_x)]));
-                break;
-            case S22_PLOT:
-                cursor.setY(getYPoint(adc_data->S22[qRound(cursor.x()/step_x)]));
-                break;
-        }
+        cursor.setY(getYPoint((*channel1)[qRound(cursor.x()/step_x)]));
 
         emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,cursor.y()/12.0);
     }
