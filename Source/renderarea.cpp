@@ -208,14 +208,29 @@ void RenderArea::mouseMoveEvent(QMouseEvent *event)
         cursor.setX(event->x());
         if ( qRound(event->x()/step_x) < adc_data->point_count )
         {
-            cursor.setY(getYPoint((*channel1)[qRound(event->x()/step_x)]));
-            if (cursor_enable)
+            if (isPhase)
             {
-                emit move_pointer(adc_data->f_start + event->x() /step_x * adc_data->step,cursor.y()/12.0);
+                cursor.setY(getPhasePoint((*channel1_phase)[qRound(event->x()/step_x)]));
+                if (cursor_enable)
+                {
+                    emit move_pointer(adc_data->f_start + event->x() /step_x * adc_data->step,cursor.y()/3.14159265*180.0);
+                }
+                else
+                {
+                    emit move_pointer(event->x(),event->y());
+                }
             }
             else
             {
-                emit move_pointer(event->x(),event->y());
+                cursor.setY(getYPoint((*channel1)[qRound(event->x()/step_x)]));
+                if (cursor_enable)
+                {
+                    emit move_pointer(adc_data->f_start + event->x() /step_x * adc_data->step,cursor.y()/12.0);
+                }
+                else
+                {
+                    emit move_pointer(event->x(),event->y());
+                }
             }
         }
     }
@@ -347,17 +362,27 @@ void RenderArea::keyPressEvent(QKeyEvent * event)
     else if( event->key() == Qt::Key_D )
     {
         isDouble = !isDouble;
+        emit double_toggle();
     }
     else if( event->key() == Qt::Key_P )
     {
         isPhase = !isPhase;
+        emit phase_toggle();
     }
     int a = qRound(cursor.x()/step_x);
     if (cursor_enable)
     {   //update for new parameter
-        cursor.setY(getYPoint((*channel1)[qRound(cursor.x()/step_x)]));
+        if (isPhase)
+        {
+            cursor.setY(getPhasePoint((*channel1_phase)[qRound(cursor.x()/step_x)]));
+            emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,cursor.y()/3.14159265*180.0);
+        }
+        else
+        {
+            cursor.setY(getYPoint((*channel1)[qRound(cursor.x()/step_x)]));
 
-        emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,cursor.y()/12.0);
+            emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,cursor.y()/12.0);
+        }
     }
 
 }

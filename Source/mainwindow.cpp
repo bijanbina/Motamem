@@ -50,10 +50,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
     connect(renderArea,SIGNAL(drag_file(QString)),this,SLOT(onNewFile(QString)));
     connect(A_About, SIGNAL(triggered(bool)),this,SLOT(about_clicked()));
-
-
-
-
+    connect(renderArea, SIGNAL(phase_toggle()),this,SLOT(plot_phase_toggle()));
+    connect(renderArea, SIGNAL(double_toggle()),this,SLOT(plot_double_toggle()));
+    connect(A_plot_phase, SIGNAL(triggered(bool)),this,SLOT(Aplot_phase_toggle()));
+    connect(A_plot_double, SIGNAL(triggered(bool)),this,SLOT(Aplot_double_toggle()));
 }
 
 void MainWindow::createMenu()
@@ -147,10 +147,24 @@ void MainWindow::about_clicked()
 
 void MainWindow::plot_phase_toggle()
 {
-
+    device->isPhase = renderArea->isPhase;
+    A_plot_phase->setChecked(device->isPhase);
 }
 
 void MainWindow::plot_double_toggle()
 {
+    device->isDouble = renderArea->isPhase;
+    A_plot_double->setChecked(device->isPhase);
+}
 
+void MainWindow::Aplot_phase_toggle()
+{
+    renderArea->isPhase = A_plot_phase->isChecked();
+    device->isPhase = renderArea->isPhase;
+}
+
+void MainWindow::Aplot_double_toggle()
+{
+    renderArea->isDouble = A_plot_double->isChecked();
+    device->isDouble = renderArea->isPhase;
 }

@@ -31,6 +31,8 @@ private slots:
     void about_clicked();
     void plot_phase_toggle();
     void plot_double_toggle();
+    void Aplot_phase_toggle();
+    void Aplot_double_toggle();
 
 private:
     void createMenu();

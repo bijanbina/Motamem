@@ -25,6 +25,9 @@ public:
 
     void renderPoint(QPainter *painter);
 
+    bool isDouble;
+    bool isPhase;
+
 private slots:
     void calc_fps();
 
@@ -53,8 +56,6 @@ private:
     QPoint cursor;
     bool cursor_enable;
     bool cursor_lock;
-    bool isDouble;
-    bool isPhase;
     double step_x;
     QVector<float> *channel1;
     QVector<float> *channel2;
@@ -66,5 +67,7 @@ signals:
     void move_pointer(int x,float y);
     void drag_file(QString filename);
     void drop_multifile(QList<QUrl> urlList);
+    void phase_toggle();
+    void double_toggle();
 };
 #endif // RENDERAREA_H

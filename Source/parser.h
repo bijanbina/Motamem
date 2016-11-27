@@ -14,6 +14,9 @@ public:
     ~parser();
     bool openFile(QString filename);
 
+
+    bool isDouble;
+    bool isPhase;
 private:
     void createPlotFiles(QString filename);
     void PlotFileS(QString filename, plotID plot_id);
