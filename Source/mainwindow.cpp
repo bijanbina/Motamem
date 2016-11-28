@@ -153,8 +153,8 @@ void MainWindow::plot_phase_toggle()
 
 void MainWindow::plot_double_toggle()
 {
-    device->isDouble = renderArea->isPhase;
-    A_plot_double->setChecked(device->isPhase);
+    device->isDouble = renderArea->isDouble;
+    A_plot_double->setChecked(device->isDouble);
 }
 
 void MainWindow::Aplot_phase_toggle()
@@ -166,5 +166,5 @@ void MainWindow::Aplot_phase_toggle()
 void MainWindow::Aplot_double_toggle()
 {
     renderArea->isDouble = A_plot_double->isChecked();
-    device->isDouble = renderArea->isPhase;
+    device->isDouble = renderArea->isDouble;
 }

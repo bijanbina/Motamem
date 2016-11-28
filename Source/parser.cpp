@@ -12,6 +12,8 @@ parser::parser(sparameter_data *data)
     //x = 0;
     //turn = find_backR;
     plot_data = data;
+    isDouble = false;
+    isPhase = false;
     //connect(serial,SIGNAL(readyRead()),this,SLOT(readData()));
 }
 
@@ -91,6 +93,7 @@ bool parser::openFile(QString filename)
         read_param++;
     }
     createPlotFiles(filename);
+
     /*while (true)
     {
         data = serial->read(1);
@@ -147,8 +150,11 @@ void parser::createPlotFiles(QString filename)
 {
     PlotFileS(filename,S11_PLOT);
     PlotFileS(filename,S12_PLOT);
-    PlotFileS(filename,S21_PLOT);
-    PlotFileS(filename,S22_PLOT);
+    if (isDouble == 0)
+    {
+        PlotFileS(filename,S21_PLOT);
+        PlotFileS(filename,S22_PLOT);
+    }
 }
 
 //s parameter plot
@@ -197,6 +203,33 @@ void parser::PlotFileS(QString filename,plotID plot_id)
     plot_wid->addGraph();
     plot_wid->graph(0)->setData(f,s_10log);
 
+    if (isDouble)
+    {    switch(plot_id)
+        {
+            case S11_PLOT:
+                s_param = &(plot_data->S22);
+                break;
+            case S12_PLOT:
+                s_param = &(plot_data->S21);
+                break;
+            case S21_PLOT:
+                s_param = &(plot_data->S12);
+                break;
+            case S22_PLOT:
+                s_param = &(plot_data->S11);
+                break;
+        }
+
+        for (int i = 0 ; i < plot_data->point_count ; i++)
+        {
+            s_10log[i] = 10 * log10((*s_param)[i]);
+        }
+        plot_wid->addGraph();
+        plot_wid->graph(1)->setData(f,s_10log);
+        plot_wid->graph(1)->setPen(Qt::DashLine);
+        plot_s_name += " D";
+    }
+
     plot_wid->xAxis->setLabel("Frequency (MHz)");
     plot_wid->yAxis->setLabel("Power (dB)");
     plot_wid->plotLayout()->insertRow(0);
@@ -207,6 +240,6 @@ void parser::PlotFileS(QString filename,plotID plot_id)
     plot_wid->xAxis->setRange(plot_data->f_start, plot_data->f_end);
     plot_wid->yAxis->setRange(floor(s_min*1.4142),5);
     plot_wid->replot();
-    qDebug() << file_info->absoluteDir().absolutePath();
+    //qDebug() << file_info->absoluteDir().absolutePath();
     plot_wid->savePng(base_path + "_" + plot_s_name + ".png");
 }
