@@ -20,6 +20,7 @@ public:
 private:
     void createPlotFiles(QString filename);
     void PlotFileS(QString filename, plotID plot_id);
+    void PlotFilePhase(QString filename,plotID plot_id);
 
 
     sparameter_data *plot_data;

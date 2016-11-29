@@ -148,12 +148,25 @@ parser::~parser()
 
 void parser::createPlotFiles(QString filename)
 {
-    PlotFileS(filename,S11_PLOT);
-    PlotFileS(filename,S12_PLOT);
-    if (isDouble == 0)
+    if (isPhase)
     {
-        PlotFileS(filename,S21_PLOT);
-        PlotFileS(filename,S22_PLOT);
+        PlotFilePhase(filename,S11_PLOT);
+        PlotFilePhase(filename,S12_PLOT);
+        if (isDouble == 0)
+        {
+            PlotFilePhase(filename,S21_PLOT);
+            PlotFilePhase(filename,S22_PLOT);
+        }
+    }
+    else
+    {
+        PlotFileS(filename,S11_PLOT);
+        PlotFileS(filename,S12_PLOT);
+        if (isDouble == 0)
+        {
+            PlotFileS(filename,S21_PLOT);
+            PlotFileS(filename,S22_PLOT);
+        }
     }
 }
 
@@ -239,6 +252,98 @@ void parser::PlotFileS(QString filename,plotID plot_id)
 
     plot_wid->xAxis->setRange(plot_data->f_start, plot_data->f_end);
     plot_wid->yAxis->setRange(floor(s_min*1.4142),5);
+    plot_wid->replot();
+    //qDebug() << file_info->absoluteDir().absolutePath();
+    plot_wid->savePng(base_path + "_" + plot_s_name + ".png");
+}
+
+//s parameter plot
+void parser::PlotFilePhase(QString filename,plotID plot_id)
+{
+    QCustomPlot *plot_wid = new QCustomPlot;
+    QFileInfo *file_info = new QFileInfo(filename);
+    QVector <double> s_phase_degree = QVector<double> (plot_data->point_count);
+    QVector <double> f = QVector<double> (plot_data->point_count);
+    QString plot_title = file_info->baseName();
+    QString base_path = file_info->absoluteDir().absolutePath() + "/" + file_info->baseName();
+    QString plot_s_name;
+    QVector<float> *s_param;
+
+    switch(plot_id)
+    {
+        case S11_PLOT:
+            plot_s_name = "S11";
+            s_param = &(plot_data->S11_phase);
+            break;
+        case S12_PLOT:
+            plot_s_name = "S12";
+            s_param = &(plot_data->S12_phase);
+            break;
+        case S21_PLOT:
+            plot_s_name = "S21";
+            s_param = &(plot_data->S21_phase);
+            break;
+        case S22_PLOT:
+            plot_s_name = "S22";
+            s_param = &(plot_data->S22_phase);
+            break;
+    }
+    plot_s_name += " Phase";
+
+    double s_min = 0,s_max = 0;
+    for (int i = 0 ; i < plot_data->point_count ; i++)
+    {
+        s_phase_degree[i] = 180.0/3.14159265 * (*s_param)[i];
+        f[i] = plot_data->freq[i];
+        if (s_min > s_phase_degree[i])
+        {
+            s_min = s_phase_degree[i];
+        }
+        if (s_max < s_phase_degree[i])
+        {
+            s_max = s_phase_degree[i];
+        }
+
+    }
+
+    plot_wid->addGraph();
+    plot_wid->graph(0)->setData(f,s_phase_degree);
+
+    if (isDouble)
+    {    switch(plot_id)
+        {
+            case S11_PLOT:
+                s_param = &(plot_data->S22_phase);
+                break;
+            case S12_PLOT:
+                s_param = &(plot_data->S21_phase);
+                break;
+            case S21_PLOT:
+                s_param = &(plot_data->S12_phase);
+                break;
+            case S22_PLOT:
+                s_param = &(plot_data->S11_phase);
+                break;
+        }
+
+        for (int i = 0 ; i < plot_data->point_count ; i++)
+        {
+            s_phase_degree[i] = 180.0/3.14159265 * (*s_param)[i];
+        }
+        plot_wid->addGraph();
+        plot_wid->graph(1)->setData(f,s_phase_degree);
+        plot_wid->graph(1)->setPen(Qt::DashLine);
+    }
+
+    plot_wid->xAxis->setLabel("Frequency (MHz)");
+    plot_wid->yAxis->setLabel("Phase (°)");
+    plot_wid->plotLayout()->insertRow(0);
+    plot_wid->plotLayout()->addElement(0,0, new QCPTextElement(plot_wid,
+                                                   plot_title + " " + plot_s_name,
+                                                   QFont("sans", 12, QFont::Bold)));
+
+    plot_wid->xAxis->setRange(plot_data->f_start, plot_data->f_end);
+    plot_wid->yAxis->setRange(floor(s_min*1.4142),floor(s_max*1.4142));
     plot_wid->replot();
     //qDebug() << file_info->absoluteDir().absolutePath();
     plot_wid->savePng(base_path + "_" + plot_s_name + ".png");

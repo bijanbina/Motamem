@@ -166,7 +166,7 @@ void RenderArea::paintEvent(QPaintEvent *)
 
 void RenderArea::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton ) {
+    if (event->button() == Qt::LeftButton && adc_data->point_count != 0) {
 
         if ( cursor_lock )
         {
