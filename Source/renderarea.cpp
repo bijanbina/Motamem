@@ -31,6 +31,7 @@ RenderArea::RenderArea(sparameter_data *data, QWidget *parent)
     fps = 30;
     isDouble = false;
     isPhase = false;
+    isNegative = false;
 }
 
 QSize RenderArea::minimumSizeHint() const
@@ -127,6 +128,8 @@ void RenderArea::paintEvent(QPaintEvent *)
         int pixelsWide = painter_wid.fontMetrics().width(plot_filename); //calculate rendered test width
         painter_wid.drawText(size().width()-pixelsWide-10,15,plot_filename);
     }
+    QString status = "";
+    bool have_last = false;
     switch(plot_id)
     {
         case S11_PLOT:
@@ -144,16 +147,24 @@ void RenderArea::paintEvent(QPaintEvent *)
     }
     if (isPhase)
     {
-        painter_wid.drawText(30,15,"P");
-        if (isDouble)
-        {
-            painter_wid.drawText(35,15,", D");
-        }
+        status += "P";
+        have_last = true;
     }
-    else if (isDouble)
+    if (isDouble)
     {
-        painter_wid.drawText(30,15,"D");
+        if (have_last)
+            status += ", ";
+        status += "D";
+        have_last = true;
     }
+    if (isNegative)
+    {
+        if (have_last)
+            status += ", ";
+        status += "N";
+        have_last = true;
+    }
+    painter_wid.drawText(30,15,status);
     if (cursor_enable)
     {
         painter_wid.setPen(QColor("#50d2a5"));
@@ -344,6 +355,10 @@ void RenderArea::keyPressEvent(QKeyEvent * event)
     {
         plot_id = S22_PLOT;
         updateChannel();
+    }
+    else if( event->key() == Qt::Key_Minus )
+    {
+        isNegative = !isNegative;
     }
     else if( event->key() == Qt::Key_L )
     {

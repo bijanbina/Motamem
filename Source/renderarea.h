@@ -27,6 +27,7 @@ public:
 
     bool isDouble;
     bool isPhase;
+    bool isNegative;
 
 private slots:
     void calc_fps();
