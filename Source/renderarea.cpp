@@ -55,54 +55,24 @@ void RenderArea::renderPoint(QPainter *painter)
     painter->setBrush(QColor("#50bdd2"));
     painter->setPen(QColor("#50bdd2"));
     float y1,y2;
-    if (isPhase)
+    for (int x = 1; x < adc_data->point_count; x++)
     {
-        for (int x = 1; x < adc_data->point_count; x++)
-        {
-            y2 = (*channel1_phase)[x];
-            y1 = (*channel1_phase)[x-1];
-            //painter->drawEllipse(QPoint(10*x+5,y),5,5);
-            painter->drawLine(step_x*x-step_x/2,getY_Phase(y1),step_x*x+step_x/2,getY_Phase(y2));
-        }
-
-        if (isDouble)
-        {
-            painter->setBrush(QColor("#d25079"));
-            painter->setPen(QColor("#d25079"));
-            for (int x = 1; x < adc_data->point_count; x++)
-            {
-                y2 = (*channel2_phase)[x];
-                y1 = (*channel2_phase)[x-1];
-                painter->drawLine(step_x*x-step_x/2,getY_Phase(y1),step_x*x+step_x/2,getY_Phase(y2));
-            }
-        }
+        y2 = channel1[x];
+        y1 = channel1[x-1];
+        painter->drawLine(step_x*x-step_x/2,y1,step_x*x+step_x/2,y2);
     }
-    else
+
+    if (isDouble)
     {
+        painter->setBrush(QColor("#d25079"));
+        painter->setPen(QColor("#d25079"));
         for (int x = 1; x < adc_data->point_count; x++)
         {
-            y2 = (*channel1)[x];
-            y1 = (*channel1)[x-1];
-            painter->drawLine(step_x*x-step_x/2,getY_Mag(y1),step_x*x+step_x/2,getY_Mag(y2));
-        }
-
-        if (isDouble)
-        {
-            painter->setBrush(QColor("#d25079"));
-            painter->setPen(QColor("#d25079"));
-            for (int x = 1; x < adc_data->point_count; x++)
+            y2 = channel2[x];
+            y1 = channel2[x-1];
+            if (true)
             {
-                y2 = (*channel2)[x];
-                y1 = (*channel2)[x-1];
-                //painter->drawEllipse(QPoint(10*x+5,y),5,5);
-                if (true)
-                {
-                    painter->drawLine(step_x*x-step_x/2,getY_Mag(y1),step_x*x+step_x/2,getY_Mag(y2));
-                }
-                else
-                {
-                    painter->drawLine(step_x*x-step_x/2,y1,step_x*x+step_x/2,y2);
-                }
+                painter->drawLine(step_x*x-step_x/2,y1,step_x*x+step_x/2,y2);
             }
         }
     }
@@ -190,11 +160,11 @@ void RenderArea::mousePressEvent(QMouseEvent *event)
         cursor.setX(event->x());
         if ( qRound(event->x()/step_x) < adc_data->point_count )
         {
-            cursor.setY(getY_Mag((*channel1)[qRound(event->x()/step_x)]));
+            cursor.setY(channel1[qRound(event->x()/step_x)]);
         }
         else
         {
-            cursor.setY(getY_Mag((*channel1)[adc_data->point_count-1]));
+            cursor.setY(channel1[adc_data->point_count-1]);
         }
     }
 }
@@ -206,29 +176,22 @@ void RenderArea::mouseMoveEvent(QMouseEvent *event)
         cursor.setX(event->x());
         if ( qRound(event->x()/step_x) < adc_data->point_count )
         {
-            if (isPhase)
+            cursor.setY(channel1[qRound(event->x()/step_x)]);
+            if (cursor_enable)
             {
-                cursor.setY(getY_Phase((*channel1_phase)[qRound(event->x()/step_x)]));
-                if (cursor_enable)
+                if (isPhase)
                 {
                     emit move_pointer(adc_data->f_start + event->x() /step_x * adc_data->step,getPhase_Y(cursor.y()));
                 }
                 else
                 {
-                    emit move_pointer(event->x(),event->y());
+                    emit move_pointer(adc_data->f_start + event->x() /step_x * adc_data->step,getMag_Y(cursor.y()));
                 }
+
             }
             else
             {
-                cursor.setY(getY_Mag((*channel1)[qRound(event->x()/step_x)]));
-                if (cursor_enable)
-                {
-                    emit move_pointer(adc_data->f_start + event->x() /step_x * adc_data->step,getMag_Y(cursor.y()));
-                }
-                else
-                {
-                    emit move_pointer(event->x(),event->y());
-                }
+                emit move_pointer(event->x(),event->y());
             }
         }
     }
@@ -305,32 +268,60 @@ void RenderArea::dropEvent(QDropEvent* event)
 //update plot channel vector to match plot id
 void RenderArea::updateChannel()
 {
-    switch(plot_id)
+    float y1,y2;
+    if (isPhase)
     {
-        case S11_PLOT:
-            channel1 = &(adc_data->S11);
-            channel2 = &(adc_data->S22);
-            channel1_phase = &(adc_data->S11_phase);
-            channel2_phase = &(adc_data->S22_phase);
-            break;
-        case S12_PLOT:
-            channel1 = &(adc_data->S12);
-            channel2 = &(adc_data->S21);
-            channel1_phase = &(adc_data->S12_phase);
-            channel2_phase = &(adc_data->S21_phase);
-            break;
-        case S21_PLOT:
-            channel1 = &(adc_data->S21);
-            channel2 = &(adc_data->S12);
-            channel1_phase = &(adc_data->S21_phase);
-            channel2_phase = &(adc_data->S12_phase);
-            break;
-        case S22_PLOT:
-            channel1 = &(adc_data->S22);
-            channel2 = &(adc_data->S11);
-            channel1_phase = &(adc_data->S22_phase);
-            channel2_phase = &(adc_data->S11_phase);
-            break;
+        switch(plot_id)
+        {
+            case S11_PLOT:
+                channel1 = adc_data->S11_phase;
+                channel2 = adc_data->S22_phase;
+                break;
+            case S12_PLOT:
+                channel1 = adc_data->S12_phase;
+                channel2 = adc_data->S21_phase;
+                break;
+            case S21_PLOT:
+                channel1 = adc_data->S21_phase;
+                channel2 = adc_data->S12_phase;
+                break;
+            case S22_PLOT:
+                channel1 = adc_data->S22_phase;
+                channel2 = adc_data->S11_phase;
+                break;
+        }
+        for (int x = 0; x < adc_data->point_count; x++)
+        {
+            channel1[x] = getY_Phase(channel1[x]);
+            channel2[x] = getY_Phase(channel2[x]);
+        }
+    }
+    else
+    {
+        switch(plot_id)
+        {
+            case S11_PLOT:
+                channel1 = adc_data->S11;
+                channel2 = adc_data->S22;
+                break;
+            case S12_PLOT:
+                channel1 = adc_data->S12;
+                channel2 = adc_data->S21;
+                break;
+            case S21_PLOT:
+                channel1 = adc_data->S21;
+                channel2 = adc_data->S12;
+                break;
+            case S22_PLOT:
+                channel1 = adc_data->S22;
+                channel2 = adc_data->S11;
+                break;
+        }
+        for (int x = 1; x < adc_data->point_count; x++)
+        {
+            channel1[x] = getY_Mag(channel1[x]);
+            channel2[x] = getY_Mag(channel2[x]);
+        }
     }
 }
 
@@ -375,11 +366,13 @@ void RenderArea::keyPressEvent(QKeyEvent * event)
     else if( event->key() == Qt::Key_D )
     {
         isDouble = !isDouble;
+        updateChannel();
         emit double_toggle();
     }
     else if( event->key() == Qt::Key_P )
     {
         isPhase = !isPhase;
+        updateChannel();
         emit phase_toggle();
     }
     int a = qRound(cursor.x()/step_x);
@@ -387,12 +380,12 @@ void RenderArea::keyPressEvent(QKeyEvent * event)
     {   //update for new parameter
         if (isPhase)
         {
-            cursor.setY(getY_Phase((*channel1_phase)[qRound(cursor.x()/step_x)]));
+            cursor.setY(channel1[qRound(cursor.x()/step_x)]);
             emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,getPhase_Y(cursor.y()));
         }
         else
         {
-            cursor.setY(getY_Mag((*channel1)[qRound(cursor.x()/step_x)]));
+            cursor.setY(channel1[qRound(cursor.x()/step_x)]);
 
             emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,getMag_Y(cursor.y()));
         }

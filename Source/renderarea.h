@@ -60,10 +60,8 @@ private:
     bool cursor_enable;
     bool cursor_lock;
     double step_x;
-    QVector<float> *channel1;
-    QVector<float> *channel2;
-    QVector<float> *channel1_phase;
-    QVector<float> *channel2_phase;
+    QVector<float> channel1;
+    QVector<float> channel2;
 
 signals:
     void click_on_point(int x,int y);
