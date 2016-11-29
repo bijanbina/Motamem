@@ -41,8 +41,10 @@ protected:
     void keyPressEvent(QKeyEvent * event) Q_DECL_OVERRIDE;
 
 private:
-    int getYPoint(float y);
-    int getPhasePoint(float y);
+    int getY_Mag(float mag);
+    int getY_Phase(float phase);
+    float getPhase_Y(int y);
+    float getMag_Y(int y);
     void updateChannel();
 
     sparameter_data *adc_data;

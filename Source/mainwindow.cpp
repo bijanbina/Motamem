@@ -118,7 +118,14 @@ void MainWindow::onPlotClick(int x, int y)
 
 void MainWindow::onMouseMove(int x, float y)
 {
-    status->setText("  " + QString::number(x) + "MHz : -" + QString::number(y, 'g', 4) + " dB");
+    if (A_plot_phase->isChecked())
+    {
+        status->setText("  " + QString::number(x) + "MHz : -" + QString::number(y, 'g', 4) + " °");
+    }
+    else
+    {
+        status->setText("  " + QString::number(x) + "MHz : -" + QString::number(y, 'g', 4) + " dB");
+    }
 }
 
 void MainWindow::onNewFile(QString filename)

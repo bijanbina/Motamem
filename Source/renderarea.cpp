@@ -61,7 +61,7 @@ void RenderArea::renderPoint(QPainter *painter)
             y2 = (*channel1_phase)[x];
             y1 = (*channel1_phase)[x-1];
             //painter->drawEllipse(QPoint(10*x+5,y),5,5);
-            painter->drawLine(step_x*x-step_x/2,getPhasePoint(y1),step_x*x+step_x/2,getPhasePoint(y2));
+            painter->drawLine(step_x*x-step_x/2,getY_Phase(y1),step_x*x+step_x/2,getY_Phase(y2));
         }
 
         if (isDouble)
@@ -72,7 +72,7 @@ void RenderArea::renderPoint(QPainter *painter)
             {
                 y2 = (*channel2_phase)[x];
                 y1 = (*channel2_phase)[x-1];
-                painter->drawLine(step_x*x-step_x/2,getPhasePoint(y1),step_x*x+step_x/2,getPhasePoint(y2));
+                painter->drawLine(step_x*x-step_x/2,getY_Phase(y1),step_x*x+step_x/2,getY_Phase(y2));
             }
         }
     }
@@ -82,7 +82,7 @@ void RenderArea::renderPoint(QPainter *painter)
         {
             y2 = (*channel1)[x];
             y1 = (*channel1)[x-1];
-            painter->drawLine(step_x*x-step_x/2,getYPoint(y1),step_x*x+step_x/2,getYPoint(y2));
+            painter->drawLine(step_x*x-step_x/2,getY_Mag(y1),step_x*x+step_x/2,getY_Mag(y2));
         }
 
         if (isDouble)
@@ -96,7 +96,7 @@ void RenderArea::renderPoint(QPainter *painter)
                 //painter->drawEllipse(QPoint(10*x+5,y),5,5);
                 if (true)
                 {
-                    painter->drawLine(step_x*x-step_x/2,getYPoint(y1),step_x*x+step_x/2,getYPoint(y2));
+                    painter->drawLine(step_x*x-step_x/2,getY_Mag(y1),step_x*x+step_x/2,getY_Mag(y2));
                 }
                 else
                 {
@@ -179,25 +179,12 @@ void RenderArea::mousePressEvent(QMouseEvent *event)
         cursor.setX(event->x());
         if ( qRound(event->x()/step_x) < adc_data->point_count )
         {
-            cursor.setY(getYPoint(adc_data->S11[qRound(event->x()/step_x)]));
+            cursor.setY(getY_Mag((*channel1)[qRound(event->x()/step_x)]));
         }
         else
         {
-            cursor.setY(getYPoint((*channel1)[adc_data->point_count-1]));
+            cursor.setY(getY_Mag((*channel1)[adc_data->point_count-1]));
         }
-        /*QPainter painter_wid;
-        painter_wid.begin(this);
-        painter_wid.setPen(QColor("#295a83"));
-        painter_wid.drawText(10,this->size().height()-15,QString::number(event->x()));
-        QDrag *drag = new QDrag(this);
-        QMimeData *mimeData = new QMimeData;
-
-        mimeData->setText(commentEdit->toPlainText());
-        drag->setMimeData(mimeData);
-        drag->setPixmap(iconPixmap);
-
-        Qt::DropAction dropAction = drag->exec();
-        ...*/
     }
 }
 
@@ -210,10 +197,10 @@ void RenderArea::mouseMoveEvent(QMouseEvent *event)
         {
             if (isPhase)
             {
-                cursor.setY(getPhasePoint((*channel1_phase)[qRound(event->x()/step_x)]));
+                cursor.setY(getY_Phase((*channel1_phase)[qRound(event->x()/step_x)]));
                 if (cursor_enable)
                 {
-                    emit move_pointer(adc_data->f_start + event->x() /step_x * adc_data->step,cursor.y()/3.14159265*180.0);
+                    emit move_pointer(adc_data->f_start + event->x() /step_x * adc_data->step,getPhase_Y(cursor.y()));
                 }
                 else
                 {
@@ -222,10 +209,10 @@ void RenderArea::mouseMoveEvent(QMouseEvent *event)
             }
             else
             {
-                cursor.setY(getYPoint((*channel1)[qRound(event->x()/step_x)]));
+                cursor.setY(getY_Mag((*channel1)[qRound(event->x()/step_x)]));
                 if (cursor_enable)
                 {
-                    emit move_pointer(adc_data->f_start + event->x() /step_x * adc_data->step,cursor.y()/12.0);
+                    emit move_pointer(adc_data->f_start + event->x() /step_x * adc_data->step,getMag_Y(cursor.y()));
                 }
                 else
                 {
@@ -244,22 +231,33 @@ void RenderArea::dragEnterEvent(QDragEnterEvent *e)
     }
 }
 
-int RenderArea::getYPoint(float y)
+int RenderArea::getY_Mag(float mag)
 {
     if (true)
     {
-        return  round(-log10(y)*10*12 + TOPBAR_OFFSET);
+        return  round(-log10(mag)*10*12 + TOPBAR_OFFSET);
     }
     else
     {
-        return round(height()-y*400 + TOPBAR_OFFSET);
+        return round(height()-mag*400 + TOPBAR_OFFSET);
     }
 }
 
-int RenderArea::getPhasePoint(float y)
+int RenderArea::getY_Phase(float phase)
 {
-   return  round(y/3.14159265*180.0 + 200);
+   return  round(phase/3.14159265*180.0 * 0.66 + 200);
 }
+
+float RenderArea::getPhase_Y(int y)
+{
+   return  (y - 200.0) * 1.5;
+}
+
+float RenderArea::getMag_Y(int y)
+{
+   return  (y - TOPBAR_OFFSET)/ 12.0;
+}
+
 
 void RenderArea::dropEvent(QDropEvent* event)
 {
@@ -374,14 +372,14 @@ void RenderArea::keyPressEvent(QKeyEvent * event)
     {   //update for new parameter
         if (isPhase)
         {
-            cursor.setY(getPhasePoint((*channel1_phase)[qRound(cursor.x()/step_x)]));
-            emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,cursor.y()/3.14159265*180.0);
+            cursor.setY(getY_Phase((*channel1_phase)[qRound(cursor.x()/step_x)]));
+            emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,getPhase_Y(cursor.y()));
         }
         else
         {
-            cursor.setY(getYPoint((*channel1)[qRound(cursor.x()/step_x)]));
+            cursor.setY(getY_Mag((*channel1)[qRound(cursor.x()/step_x)]));
 
-            emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,cursor.y()/12.0);
+            emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,getMag_Y(cursor.y()));
         }
     }
 
