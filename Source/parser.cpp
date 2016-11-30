@@ -333,6 +333,7 @@ void parser::PlotFilePhase(QString filename,plotID plot_id)
         plot_wid->addGraph();
         plot_wid->graph(1)->setData(f,s_phase_degree);
         plot_wid->graph(1)->setPen(Qt::DashLine);
+        plot_s_name += " D";
     }
 
     plot_wid->xAxis->setLabel("Frequency (MHz)");

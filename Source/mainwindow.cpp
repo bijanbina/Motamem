@@ -54,6 +54,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(renderArea, SIGNAL(double_toggle()),this,SLOT(plot_double_toggle()));
     connect(A_plot_phase, SIGNAL(triggered(bool)),this,SLOT(Aplot_phase_toggle()));
     connect(A_plot_double, SIGNAL(triggered(bool)),this,SLOT(Aplot_double_toggle()));
+    update_timer->start(30);
 }
 
 void MainWindow::createMenu()
@@ -120,11 +121,11 @@ void MainWindow::onMouseMove(int x, float y)
 {
     if (A_plot_phase->isChecked())
     {
-        status->setText("  " + QString::number(x) + "MHz : -" + QString::number(y, 'g', 4) + " °");
+        status->setText("  " + QString::number(x) + "MHz : " + QString::number(y, 'g', 4) + " °");
     }
     else
     {
-        status->setText("  " + QString::number(x) + "MHz : -" + QString::number(y, 'g', 4) + " dB");
+        status->setText("  " + QString::number(x) + "MHz : " + QString::number(y, 'g', 4) + " dB");
     }
 }
 

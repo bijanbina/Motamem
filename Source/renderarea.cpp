@@ -52,6 +52,8 @@ void RenderArea::calc_fps()
 
 void RenderArea::renderPoint(QPainter *painter)
 {
+    if (plot_id == NO_PLOT)
+        return;
     painter->setBrush(QColor("#50bdd2"));
     painter->setPen(QColor("#50bdd2"));
     float y1,y2;
@@ -147,7 +149,7 @@ void RenderArea::paintEvent(QPaintEvent *)
 
 void RenderArea::mousePressEvent(QMouseEvent *event)
 {
-    if (event->button() == Qt::LeftButton && adc_data->point_count != 0) {
+    if (event->button() == Qt::LeftButton && adc_data->point_count != 0 && plot_id != NO_PLOT) {
 
         if ( cursor_lock )
         {
@@ -174,7 +176,7 @@ void RenderArea::mouseMoveEvent(QMouseEvent *event)
     if ( !cursor_lock )
     {
         cursor.setX(event->x());
-        if ( qRound(event->x()/step_x) < adc_data->point_count )
+        if ( qRound(event->x()/step_x) < adc_data->point_count && plot_id != NO_PLOT )
         {
             cursor.setY(channel1[qRound(event->x()/step_x)]);
             if (cursor_enable)
@@ -219,17 +221,17 @@ int RenderArea::getY_Mag(float mag)
 
 int RenderArea::getY_Phase(float phase)
 {
-   return  round(phase/3.14159265*180.0 * 0.66 + 200);
+   return  round(phase/3.14159265*180.0 * -0.5 + 200);
 }
 
 float RenderArea::getPhase_Y(int y)
 {
-   return  (y - 200.0) * 1.5;
+   return  (y - 200.0) * -2.0;
 }
 
 float RenderArea::getMag_Y(int y)
 {
-   return  (y - TOPBAR_OFFSET)/ 12.0;
+   return  (y - TOPBAR_OFFSET)/ -12.0;
 }
 
 
@@ -254,6 +256,7 @@ void RenderArea::dropEvent(QDropEvent* event)
       if (urlList.size() > 1)
       {
           emit drop_multifile(urlList);
+          updateChannel();
       }
       else
       {
@@ -268,7 +271,8 @@ void RenderArea::dropEvent(QDropEvent* event)
 //update plot channel vector to match plot id
 void RenderArea::updateChannel()
 {
-    float y1,y2;
+    if (plot_id == NO_PLOT)
+        return;
     if (isPhase)
     {
         switch(plot_id)
@@ -289,6 +293,13 @@ void RenderArea::updateChannel()
                 channel1 = adc_data->S22_phase;
                 channel2 = adc_data->S11_phase;
                 break;
+        }
+        if (isNegative)
+        {
+            for (int x = 0; x < adc_data->point_count; x++)
+            {
+                channel1[x] = channel2[x] - channel1[x];
+            }
         }
         for (int x = 0; x < adc_data->point_count; x++)
         {
@@ -317,7 +328,14 @@ void RenderArea::updateChannel()
                 channel2 = adc_data->S11;
                 break;
         }
-        for (int x = 1; x < adc_data->point_count; x++)
+        if (isNegative)
+        {
+            for (int x = 0; x < adc_data->point_count; x++)
+            {
+                channel1[x] = channel2[x] - channel1[x];
+            }
+        }
+        for (int x = 0; x < adc_data->point_count; x++)
         {
             channel1[x] = getY_Mag(channel1[x]);
             channel2[x] = getY_Mag(channel2[x]);
@@ -347,10 +365,6 @@ void RenderArea::keyPressEvent(QKeyEvent * event)
         plot_id = S22_PLOT;
         updateChannel();
     }
-    else if( event->key() == Qt::Key_Minus )
-    {
-        isNegative = !isNegative;
-    }
     else if( event->key() == Qt::Key_L )
     {
         bool ok;
@@ -362,6 +376,11 @@ void RenderArea::keyPressEvent(QKeyEvent * event)
             cursor_lock = true;
             cursor.setX((freq - adc_data->f_start) / adc_data->step * step_x);
         }
+    }
+    else if( event->key() == Qt::Key_Minus )
+    {
+        isNegative = !isNegative;
+        updateChannel();
     }
     else if( event->key() == Qt::Key_D )
     {
