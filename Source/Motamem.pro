@@ -8,7 +8,7 @@ QT       += core gui
 QT += widgets serialport
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
-TARGET = oscilloscop
+TARGET = motamem
 TEMPLATE = app
 
 

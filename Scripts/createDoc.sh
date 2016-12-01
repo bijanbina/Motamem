@@ -5,8 +5,8 @@ exp_num=1
 page_num=0
 pic_num=1
 filename=$(pwd)
-cp base.svg "bij_$page_num.svg"
 while [[ -e "$1/DD_MW$exp_num" ]]; do
+	cp base.svg "bij_$page_num.svg"
 	c_num=0
 	while [[ "$c_num" -lt "2" && "$1/DD_MW$exp_num" ]]; do
 		#echo $exp_num
@@ -34,9 +34,8 @@ while [[ -e "$1/DD_MW$exp_num" ]]; do
 		pic_num=$((pic_num+1))
 	done
 	inkscape "bij_$page_num.svg" --export-pdf="bij_$page_num.pdf"
-	#rm "bij_$page_num.svg"
+	rm "bij_$page_num.svg"
 	page_num=$((page_num+1))
-	cp base.svg "bij_$page_num.svg"
 done
 pdf_arg=""
 pdf_num=0
@@ -45,6 +44,6 @@ while [[ "$pdf_num" -lt "$page_num" ]]; do
 	pdf_num=$((pdf_num+1))
 done
 #pdf_arg="$pdf_arg"" output.pdf"
-echo	$pdf_arg
+#echo	$pdf_arg
 pdfunite $pdf_arg output.pdf
 rm $pdf_arg
