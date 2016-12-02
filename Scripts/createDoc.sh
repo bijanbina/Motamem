@@ -5,7 +5,7 @@ exp_num=1
 page_num=0
 pic_num=1
 filename=$(pwd)
-prefix="DD_"
+prefix="DD_$2"
 while [[ -e "$1/$prefix""$exp_num" ]]; do
 	cp base.svg "bij_$page_num.svg"
 	c_num=0
@@ -46,5 +46,5 @@ while [[ "$pdf_num" -lt "$page_num" ]]; do
 done
 #pdf_arg="$pdf_arg"" output.pdf"
 #echo	$pdf_arg
-pdfunite $pdf_arg output.pdf
+pdfunite $pdf_arg "$1.pdf"
 rm $pdf_arg
