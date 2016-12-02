@@ -28,21 +28,13 @@ RenderArea::RenderArea(sparameter_data *data, QWidget *parent)
     fps_timer = new QTimer;
     fps_timer->start(1000);
     connect(fps_timer,SIGNAL(timeout()),this,SLOT(calc_fps()));
+    setMinimumSize(QSize(screen_size, 400));
     fps = 30;
     isDouble = false;
     isPhase = false;
     isNegative = false;
 }
 
-QSize RenderArea::minimumSizeHint() const
-{
-    return QSize(screen_size, 400);
-}
-
-QSize RenderArea::sizeHint() const
-{
-    return QSize(screen_size, 400);
-}
 
 void RenderArea::calc_fps()
 {
@@ -393,6 +385,86 @@ void RenderArea::keyPressEvent(QKeyEvent * event)
         isPhase = !isPhase;
         updateChannel();
         emit phase_toggle();
+    }
+    else if( event->key() == Qt::Key_Right )
+    {
+        cursor.setX(cursor.x()+1);
+        if ( qRound(cursor.x()/step_x) < adc_data->point_count && plot_id != NO_PLOT )
+        {
+            cursor.setY(channel1[qRound(cursor.x()/step_x)]);
+            if (cursor_enable)
+            {
+                if (isPhase)
+                {
+                    emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,getPhase_Y(cursor.y()));
+                }
+                else
+                {
+                    emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,getMag_Y(cursor.y()));
+                }
+
+            }
+        }
+    }
+    else if( event->key() == Qt::Key_Left )
+    {
+        cursor.setX(cursor.x()-1);
+        if ( qRound(cursor.x()/step_x) < adc_data->point_count && plot_id != NO_PLOT )
+        {
+            cursor.setY(channel1[qRound(cursor.x()/step_x)]);
+            if (cursor_enable)
+            {
+                if (isPhase)
+                {
+                    emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,getPhase_Y(cursor.y()));
+                }
+                else
+                {
+                    emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,getMag_Y(cursor.y()));
+                }
+
+            }
+        }
+    }
+    else if( event->key() == Qt::Key_Up )
+    {
+        cursor.setX(cursor.x()+10);
+        if ( qRound(cursor.x()/step_x) < adc_data->point_count && plot_id != NO_PLOT )
+        {
+            cursor.setY(channel1[qRound(cursor.x()/step_x)]);
+            if (cursor_enable)
+            {
+                if (isPhase)
+                {
+                    emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,getPhase_Y(cursor.y()));
+                }
+                else
+                {
+                    emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,getMag_Y(cursor.y()));
+                }
+
+            }
+        }
+    }
+    else if( event->key() == Qt::Key_Down )
+    {
+        cursor.setX(cursor.x()-10);
+        if ( qRound(cursor.x()/step_x) < adc_data->point_count && plot_id != NO_PLOT )
+        {
+            cursor.setY(channel1[qRound(cursor.x()/step_x)]);
+            if (cursor_enable)
+            {
+                if (isPhase)
+                {
+                    emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,getPhase_Y(cursor.y()));
+                }
+                else
+                {
+                    emit move_pointer(adc_data->f_start + cursor.x() /step_x * adc_data->step,getMag_Y(cursor.y()));
+                }
+
+            }
+        }
     }
     int a = qRound(cursor.x()/step_x);
     if (cursor_enable)

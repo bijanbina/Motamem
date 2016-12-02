@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     renderArea = new RenderArea(&(adc_data));
     status = new QLabel("  Disconnected");
     status->setStyleSheet("color: #fff");
+    status->setMaximumHeight(20);
     mainWidget = new QWidget;
     mainWidget->setStyleSheet("background-color: #2f343f");
     mainLayout = new QVBoxLayout;

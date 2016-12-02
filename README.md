@@ -11,4 +11,7 @@ Written in Qt and meant to be cross platform.
 | 4             | set channel 1 to S22 | set channel 2 to S11         |
 | D             | plot channel 2       |                              |
 | P             | switch phase         | switch between plotting phase or magnitude |
+| L             | set frequency        | measure at nearest frequency |
 | -             | switch negative mode | plot "channel 2 - channel 1" |
+| Right Arrow   | increase frequency   |                              |
+| Left Arrow    | decrease frequency   |                              |

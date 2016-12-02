@@ -20,8 +20,6 @@ class RenderArea : public QWidget
 public:
 
     RenderArea(sparameter_data *data, QWidget *parent = 0);
-    QSize minimumSizeHint() const Q_DECL_OVERRIDE;
-    QSize sizeHint() const Q_DECL_OVERRIDE;
 
     void renderPoint(QPainter *painter);
 

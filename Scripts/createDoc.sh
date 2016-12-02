@@ -5,29 +5,30 @@ exp_num=1
 page_num=0
 pic_num=1
 filename=$(pwd)
-while [[ -e "$1/DD_MW$exp_num" ]]; do
+prefix="DD_"
+while [[ -e "$1/$prefix""$exp_num" ]]; do
 	cp base.svg "bij_$page_num.svg"
 	c_num=0
-	while [[ "$c_num" -lt "2" && "$1/DD_MW$exp_num" ]]; do
+	while [[ "$c_num" -lt "2" && "$1/$prefix""$exp_num" ]]; do
 		#echo $exp_num
 		note=$(sed "$pic_num""q;d" "$filename/$1/note")
-		sed -i'' "0,/PATH/{s:PATH:$filename/$1/DD_MW$exp_num""_S11 D.png:}" "bij_$page_num.svg"
-		sed -i'' "0,/PATH/{s:PATH:$filename/$1/DD_MW$exp_num""_S11 D.png:}" "bij_$page_num.svg"
+		sed -i'' "0,/PATH/{s:PATH:$filename/$1/$prefix""$exp_num""_S11 D.png:}" "bij_$page_num.svg"
+		sed -i'' "0,/PATH/{s:PATH:$filename/$1/$prefix""$exp_num""_S11 D.png:}" "bij_$page_num.svg"
 		sed -i'' "0,/PATH/{s:TEXT:$note:}" "bij_$page_num.svg"
 		pic_num=$((pic_num+1))
 		note=$(sed "$pic_num""q;d" "$filename/$1/note")
-		sed -i'' "0,/PATH/{s:PATH:$filename/$1/DD_MW$exp_num""_S12 D.png:}" "bij_$page_num.svg"
-		sed -i'' "0,/PATH/{s:PATH:$filename/$1/DD_MW$exp_num""_S12 D.png:}" "bij_$page_num.svg"
+		sed -i'' "0,/PATH/{s:PATH:$filename/$1/$prefix""$exp_num""_S12 D.png:}" "bij_$page_num.svg"
+		sed -i'' "0,/PATH/{s:PATH:$filename/$1/$prefix""$exp_num""_S12 D.png:}" "bij_$page_num.svg"
 		sed -i'' "0,/PATH/{s:TEXT:$note:}" "bij_$page_num.svg"
 		pic_num=$((pic_num+1))
 		note=$(sed "$pic_num""q;d" "$filename/$1/note")
-		sed -i'' "0,/PATH/{s:PATH:$filename/$1/DD_MW$exp_num""_S11 Phase D.png:}" "bij_$page_num.svg"
-		sed -i'' "0,/PATH/{s:PATH:$filename/$1/DD_MW$exp_num""_S11 Phase D.png:}" "bij_$page_num.svg"
+		sed -i'' "0,/PATH/{s:PATH:$filename/$1/$prefix""$exp_num""_S11 Phase D.png:}" "bij_$page_num.svg"
+		sed -i'' "0,/PATH/{s:PATH:$filename/$1/$prefix""$exp_num""_S11 Phase D.png:}" "bij_$page_num.svg"
 		sed -i'' "0,/PATH/{s:TEXT:$note:}" "bij_$page_num.svg"
 		pic_num=$((pic_num+1))
 		note=$(sed "$pic_num""q;d" "$filename/$1/note")
-		sed -i'' "0,/PATH/{s:PATH:$filename/$1/DD_MW$exp_num""_S12 Phase D.png:}" "bij_$page_num.svg"
-		sed -i'' "0,/PATH/{s:PATH:$filename/$1/DD_MW$exp_num""_S12 Phase D.png:}" "bij_$page_num.svg"
+		sed -i'' "0,/PATH/{s:PATH:$filename/$1/$prefix""$exp_num""_S12 Phase D.png:}" "bij_$page_num.svg"
+		sed -i'' "0,/PATH/{s:PATH:$filename/$1/$prefix""$exp_num""_S12 Phase D.png:}" "bij_$page_num.svg"
 		sed -i'' "0,/PATH/{s:TEXT:$note:}" "bij_$page_num.svg"
 		exp_num=$((exp_num+1))
 		c_num=$((c_num+1))
