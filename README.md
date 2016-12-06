@@ -15,3 +15,7 @@ Written in Qt and meant to be cross platform.
 | -             | switch negative mode | plot "channel 2 - channel 1" |
 | Right Arrow   | increase frequency   |                              |
 | Left Arrow    | decrease frequency   |                              |
+
+
+# Screenshot
+![Motamem](http://s9.iranxm.com/up/6cf334c22c8f.png "Logo Title Text 1")
